@@ -7,6 +7,12 @@ def upload_path(instance, filename):
     return upload_dir
 
 
+TEST_TYPE = (
+    ("api", "api"),
+    ("browser", "browser"),
+)
+
+
 # Create your models here.
 class RequestMethod(models.Model):
     id = models.CharField(max_length=32, primary_key=True, editable=False, default=get_uuid, db_column='id')
@@ -24,6 +30,7 @@ class RequestMethod(models.Model):
 class PressureTestMode(models.Model):
     id = models.CharField(max_length=32, primary_key=True, editable=False, default=get_uuid, db_column='id')
     test_mode = models.CharField('测试方式', max_length=100, db_column='test_mode')
+    test_type = models.CharField('类别', max_length=100, choices=TEST_TYPE, db_column='test_type')
     import_path = models.CharField('测试脚本引入路径', max_length=100, db_column='import_path')
     script = models.FileField('测试脚本文件', upload_to=upload_path, db_column='script')
     describe = models.TextField('描述', blank=True, null=True, db_column='describe')

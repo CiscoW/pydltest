@@ -38,6 +38,8 @@ class MicroServiceApiTestInstanceAdmin(admin.ModelAdmin):
 
     search_fields = ('test_mode__test_mode', 'host')
 
+    ordering = ('-test_date',)
+
     filter_horizontal = ('test_content',)
     fieldsets = (
 

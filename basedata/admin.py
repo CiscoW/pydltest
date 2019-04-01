@@ -10,4 +10,4 @@ class RequestMethodAdmin(admin.ModelAdmin):
 
 @admin.register(PressureTestMode)
 class PressureTestModeAdmin(admin.ModelAdmin):
-    list_display = ['test_mode', 'import_path', 'script', 'describe']
+    list_display = ['test_mode', 'test_type', 'import_path', 'script', 'describe']

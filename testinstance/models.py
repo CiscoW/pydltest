@@ -8,8 +8,8 @@ from testcontent.models import MicroServiceApi
 class MicroServiceApiTestInstance(models.Model):
     id = models.CharField(max_length=32, primary_key=True, editable=False, default=get_uuid, db_column='id')
     test_date = models.DateField('日期')
-    test_mode = models.ForeignKey(PressureTestMode, verbose_name='测试方式', on_delete=models.PROTECT,
-                                  db_column='test_mode')
+    test_mode = models.ForeignKey(PressureTestMode, verbose_name='测试方式', limit_choices_to={'test_type': 'api'},
+                                  on_delete=models.PROTECT, db_column='test_mode')
     host = models.CharField('host', max_length=100, db_column='host')
     min_wait = models.IntegerField('任务间最小等待时间(ms)', db_column='min_wait')
     max_wait = models.IntegerField('任务间最大等待时间(ms)', db_column='max_wait')
