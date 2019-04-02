@@ -1,7 +1,7 @@
 # Selenium IDE JSON 数据对应 Selenium Python 规则
 
 import json
-from locusttest.userbehavior import UserBehavior
+import copy
 
 COMMAND_DIC = {
     'open': 'get',
@@ -39,10 +39,12 @@ class LazyProperty(object):
 
 
 class Side(object):
-    def __init__(self, file):
-        # pyside = None
-        json_data = open(file, encoding='utf-8')
-        self.side_data = json.load(json_data)
+    def __init__(self, file=None, side_data=None):
+        if file:
+            json_data = open(file, encoding='utf-8')
+            self.side_data = json.load(json_data)
+        else:
+            self.side_data = json.loads(side_data)
 
     @property
     def url(self):
@@ -88,7 +90,8 @@ class Side(object):
 
     @staticmethod
     def command_to_python(command):
-        return COMMAND_DIC[command]
+        command_to_python = {'func_name': COMMAND_DIC[command]}
+        return command_to_python
 
     def target_to_python(self, command, target):
         target_to_python = {}
@@ -100,39 +103,74 @@ class Side(object):
         elif command == 'open':
             target_to_python['url'] = self.url + target
 
+        else:
+            element = target.split('=', 1)
+            # 转换成Python kwargs
+            target_to_python[TARGET_DIC[element[0]]] = element[1]
+
         return target_to_python
 
+    @staticmethod
+    def value_to_python(command, value):
+        value_to_python = {}
+        if command == 'select' or command == 'addSelection':
+            value = value.split('=', 1)[1]
+            value_to_python['by_visible_text'] = value
+        else:
+            value_to_python['value'] = value
 
-if __name__ == '__main__':
-    # user_behavior = UserBehavior()
-    # user_behavior.get("http://localhost:8000")
-    # user_behavior.run_fuc_by_name("set_window_size", 1920, 1050)
-    # user_behavior.run_fuc_by_name("send_keys", "admin", by_id="id_username")
-    # user_behavior.run_fuc_by_name("send_keys", "admin", by_id="id_password")
-    # user_behavior.run_fuc_by_name("click", by_css_selector=".submit-row > input")
-    # user_behavior.run_fuc_by_name("click", by_link_text="微服务接口压力测试实例")
-    # user_behavior.run_fuc_by_name("click", by_link_text="增加 微服务接口压力测试实例")
-    # user_behavior.run_fuc_by_name("click", by_link_text="今天")
-    # user_behavior.run_fuc_by_name("click", by_id="id_test_mode")
-    # user_behavior.run_fuc_by_name("select", by_visible_text="正常模式", by_id="id_test_mode")
-    # user_behavior.run_fuc_by_name("click", by_id="id_test_mode")
-    # user_behavior.run_fuc_by_name("click", by_id="id_host")
-    # user_behavior.run_fuc_by_name("send_keys", "http://localhost:5000", by_id="id_host")
-    #
-    # user_behavior.run_fuc_by_name("select", by_visible_text="/test2 test", by_id="id_test_content_from")
-    # user_behavior.run_fuc_by_name("click", by_css_selector="#id_test_content_from > option:nth-child(1)")
-    # user_behavior.run_fuc_by_name("click", by_css_selector="#id_test_content_from > option:nth-child(1)")
-    #
-    # user_behavior.run_fuc_by_name("double_click", by_css_selector="#id_test_content_from > option:nth-child(1)")
-    #
-    # user_behavior.run_fuc_by_name("select", by_visible_text="/test1 test", by_id="id_test_content_from")
-    # user_behavior.run_fuc_by_name("click", by_css_selector="option:nth-child(5)")
-    # user_behavior.run_fuc_by_name("click", by_id="id_test_content_add_link")
-    side = Side("../script/dltest.side")
-    print(side.url)
-    print(side.command_set)
-    print(side.command_set)
-    print(side.target_set)
-    print(side.check_command())
-    print(side.check_target())
-    print(side.target_to_python("open", "/"))
+        return value_to_python
+
+    @LazyProperty
+    def pyside(self):
+        pyside = copy.deepcopy(self.side_data)
+        for test in pyside['tests']:
+            for item in test['commands']:
+                command = item['command']
+                target = item['target']
+                value = item['value']
+                command_python = self.command_to_python(command)
+                target_python = self.target_to_python(command, target)
+                value_python = self.value_to_python(command, value)
+                # 用于压力测试展示的
+                request_type = {'request_type': command}
+                name = {'name': target}
+                kwargs = dict(command_python, **target_python, **value_python, **request_type, **name)
+                item['kwargs'] = kwargs
+
+        return pyside
+
+# if __name__ == '__main__':
+#     # user_behavior = UserBehavior()
+#     # user_behavior.get("http://localhost:8000")
+#     # user_behavior.run_fuc_by_name("set_window_size", 1920, 1050)
+#     # user_behavior.run_fuc_by_name("send_keys", "admin", by_id="id_username")
+#     # user_behavior.run_fuc_by_name("send_keys", "admin", by_id="id_password")
+#     # user_behavior.run_fuc_by_name("click", by_css_selector=".submit-row > input")
+#     # user_behavior.run_fuc_by_name("click", by_link_text="微服务接口压力测试实例")
+#     # user_behavior.run_fuc_by_name("click", by_link_text="增加 微服务接口压力测试实例")
+#     # user_behavior.run_fuc_by_name("click", by_link_text="今天")
+#     # user_behavior.run_fuc_by_name("click", by_id="id_test_mode")
+#     # user_behavior.run_fuc_by_name("select", by_visible_text="正常模式", by_id="id_test_mode")
+#     # user_behavior.run_fuc_by_name("click", by_id="id_test_mode")
+#     # user_behavior.run_fuc_by_name("click", by_id="id_host")
+#     # user_behavior.run_fuc_by_name("send_keys", "http://localhost:5000", by_id="id_host")
+#     #
+#     # user_behavior.run_fuc_by_name("select", by_visible_text="/test2 test", by_id="id_test_content_from")
+#     # user_behavior.run_fuc_by_name("click", by_css_selector="#id_test_content_from > option:nth-child(1)")
+#     # user_behavior.run_fuc_by_name("click", by_css_selector="#id_test_content_from > option:nth-child(1)")
+#     #
+#     # user_behavior.run_fuc_by_name("double_click", by_css_selector="#id_test_content_from > option:nth-child(1)")
+#     #
+#     # user_behavior.run_fuc_by_name("select", by_visible_text="/test1 test", by_id="id_test_content_from")
+#     # user_behavior.run_fuc_by_name("click", by_css_selector="option:nth-child(5)")
+#     # user_behavior.run_fuc_by_name("click", by_id="id_test_content_add_link")
+#     # side = Side("../script/dl001.side")
+#     # from locusttest.userbehavior import UserBehavior
+#     #
+#     # user_behavior = UserBehavior()
+#     # print(side.pyside)
+#     #
+#     # for test in side.pyside["tests"]:
+#     #     for item in test["commands"]:
+#     #         user_behavior.run_func_by_name(**item["kwargs"])

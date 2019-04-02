@@ -9,13 +9,14 @@ def get_access_token(url, user, password, params):
     return "Bearer " + access_token
 
 
-def get_test_data(test_instance):
+def get_api_test_data(test_instance):
     api_list = []
     test_id = test_instance.id
     host = test_instance.host
     min_wait = test_instance.min_wait
     max_wait = test_instance.max_wait
     import_path = test_instance.test_mode.import_path
+    test_type = test_instance.test_mode.test_type
     locust_count = test_instance.locust_count
     hatch_rate = test_instance.hatch_rate
     run_time = test_instance.run_time
@@ -49,14 +50,36 @@ def get_test_data(test_instance):
 
     test_data = {"test_id": test_id, "host": host, "min_wait": min_wait, "max_wait": max_wait,
                  "import_path": import_path, "locust_count": locust_count, "hatch_rate": hatch_rate,
-                 "run_time": run_time, "api_list": api_list}
+                 "run_time": run_time, "api_list": api_list, "test_type": test_type}
 
     # response = requests.post(RECEIVE_TEST_DATA_URL, data=json.dumps(test_data))
 
     return test_id, json.dumps(test_data)
 
 
+def get_side_test_data(test_instance):
+    test_id = test_instance.id
+    host = test_instance.host
+    min_wait = test_instance.min_wait
+    max_wait = test_instance.max_wait
+    locust_count = test_instance.locust_count
+    hatch_rate = test_instance.hatch_rate
+    run_time = test_instance.run_time
+    import_path = test_instance.test_mode.import_path
+    test_type = test_instance.test_mode.test_type
+    browser_mode = test_instance.browser_mode
+    time_out = test_instance.time_out
+    side_path = test_instance.side.name
+
+    test_data = {"test_id": test_id, "host": host, "min_wait": min_wait, "max_wait": max_wait,
+                 "locust_count": locust_count, "hatch_rate": hatch_rate, "run_time": run_time,
+                 "import_path": import_path, "browser_mode": browser_mode, "time_out": time_out, "side_path": side_path,
+                 "test_type": test_type}
+
+    return test_id, json.dumps(test_data)
+
+
 def send_test_data(test_instance):
-    _, test_data = get_test_data(test_instance)
+    _, test_data = get_api_test_data(test_instance)
     response = requests.post(RECEIVE_TEST_DATA_URL, data=test_data)
     return response

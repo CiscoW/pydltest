@@ -34,12 +34,13 @@ def update_running_status(url, test_id=None):
         get_data_from_django(url)
 
 
-@app.route("/locust_data", methods=["POST"])
-def locust_data():
-    test_data = json.loads(request.get_data())
-    start_pressure_test(test_data)
-
-    return jsonify({"status": "成功"})
+# 弃用
+# @app.route("/locust_data", methods=["POST"])
+# def locust_data():
+#     test_data = json.loads(request.get_data())
+#     start_pressure_test(test_data)
+#
+#     return jsonify({"status": "成功"})
 
 
 def start_pressure_test(test_data):
@@ -58,13 +59,14 @@ def start_pressure_test(test_data):
     gevent.spawn_later(test_data["run_time"], time_limit_stop)
 
 
-@app.route("/getLocustServiceState/<test_id>", methods=["GET"])
-def get_locust_service_state(test_id):
-    # test_id = json.loads(request.get_data())["test_id"]
-    if test_id == locust_runner_id:
-        return jsonify({"state": True})
-    else:
-        return jsonify({"state": False})
+# 弃用
+# @app.route("/getLocustServiceState/<test_id>", methods=["GET"])
+# def get_locust_service_state(test_id):
+#     # test_id = json.loads(request.get_data())["test_id"]
+#     if test_id == locust_runner_id:
+#         return jsonify({"state": True})
+#     else:
+#         return jsonify({"state": False})
 
 
 def get_data_from_django(url):

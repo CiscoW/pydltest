@@ -1,4 +1,5 @@
 import time
+from functools import wraps
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,9 +7,35 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.action_chains import ActionChains
 
+from locust import events
+
+
+def locust_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+
+        try:
+            request_type = kwargs.get('request_type')
+            name = kwargs.get('name')
+            result = func(*args, **kwargs)
+        except Exception as e:
+            total_time = int((time.time() - start_time) * 1000)
+            events.request_failure.fire(request_type=request_type, name=name, response_time=total_time,
+                                        exception=e)
+        else:
+            total_time = int((time.time() - start_time) * 1000)
+            events.request_success.fire(request_type=request_type, name=name, response_time=total_time,
+                                        response_length=0)
+
+            return result
+
+    return wrapper
+
 
 class UserBehavior(object):
-    def __init__(self, browser=None):
+    def __init__(self, host=None, browser=None):
+        self.host = host
         self.browser = browser
 
     def open_browser(self):
@@ -19,10 +46,11 @@ class UserBehavior(object):
         if self.browser is None:
             self.browser = webdriver.Chrome()
 
-    def set_window_size(self, width, height):
+    def set_window_size(self, width, height, *args, **kwargs):
         self.browser.set_window_size(width, height)
 
-    def get(self, url):
+    @locust_decorator
+    def get(self, url, *args, **kwargs):
         """
         模拟浏览器访问url
         :param url:
@@ -33,26 +61,27 @@ class UserBehavior(object):
 
         self.browser.get(url)
 
-    def open_window_handle(self, url=""):
+    def open_window_handle(self, url="", *args, **kwargs):
         self.browser.execute_script('window.open("%s");' % url)
         return self.get_window_handles()[-1]
 
-    def get_current_window_handle(self):
+    def get_current_window_handle(self, *args, **kwargs):
         return self.browser.current_window_handle
 
-    def get_window_handles(self):
+    def get_window_handles(self, *args, **kwargs):
         return self.browser.window_handles
 
-    def get_current_url(self):
+    def get_current_url(self, *args, **kwargs):
         return self.browser.current_url()
 
-    def switch_to_window(self, handle):
+    def switch_to_window(self, handle, *args, **kwargs):
         self.browser.switch_to_window(handle)
 
-    def maximize_window(self):
+    def maximize_window(self, *args, **kwargs):
         self.browser.maximize_window()
 
-    def refresh(self):
+    @locust_decorator
+    def refresh(self, *args, **kwargs):
         self.browser.refresh()
 
     def wait_until(self, timeout, by_strategies, by_strategies_name):
@@ -61,7 +90,7 @@ class UserBehavior(object):
 
     def find_element(self, by_id=None, by_xpath=None, by_link_text=None, by_partial_link_text=None, by_name=None,
                      tag_name=None, by_class_name=None, by_css_selector=None,
-                     timeout=None):
+                     timeout=None, *args, **kwargs):
         if timeout:
             if by_id:
                 return self.wait_until(timeout, By.ID, by_id)
@@ -112,15 +141,19 @@ class UserBehavior(object):
             if by_css_selector:
                 return self.browser.find_element_by_css_selector(by_css_selector)
 
+    @locust_decorator
     def click(self, *args, **kwargs):
         self.find_element(*args, **kwargs).click()
 
+    @locust_decorator
     def double_click(self, *args, **kwargs):
         ActionChains(self.browser).double_click(self.find_element(*args, **kwargs)).perform()
 
+    @locust_decorator
     def send_keys(self, value, *args, **kwargs):
         self.find_element(*args, **kwargs).send_keys(value)
 
+    @locust_decorator
     def select(self, by_index=None, by_visible_text=None, by_value=None, *args, **kwargs):
         select = Select(self.find_element(*args, **kwargs))
         if by_index:
@@ -138,28 +171,6 @@ class UserBehavior(object):
     def close_browser(self):
         self.browser.quit()
 
-    def run_fuc_by_name(self, name, *args, **kwargs):
-        func = getattr(self, name)
+    def run_func_by_name(self, func_name, *args, **kwargs):
+        func = getattr(self, func_name)
         return func(*args, **kwargs)
-
-
-if __name__ == '__main__':
-    user_behavior = UserBehavior()
-    # start_time_stamp = user_behavior.random_time_stamp('2018-02-20', '2019-02-26')
-    # print(start_time_stamp, user_behavior.random_time_stamp(start_time_stamp, '2019-02-26'))
-    user_behavior.browser_get("https://www.baidu.com")
-    print(user_behavior.get_current_window_handle())
-    # user_behavior.click_button(by_id="su", timeout=6)
-    # user_behavior.send_keys("selenium", by_xpath='//*[@id="kw"]')
-    # user_behavior.click_button(by_xpath='//*[@id="su"]', timeout=0)
-    # current_handle = user_behavior.get_current_window_handle()
-    # print(current_handle)
-    window_handle = user_behavior.open_window_handle("https://blog.csdn.net/EB_NUM/article/details/77864470")
-    print(window_handle)
-    # user_behavior.browser_get("https://www.baidu.com")
-    time.sleep(5)
-    user_behavior.switch_to_window(window_handle)
-    user_behavior.browser_get("https://www.baidu.com")
-    # time.sleep(3)
-    user_behavior.close_browser()
-    # print(window_handle)

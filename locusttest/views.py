@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from locusttest.models import *
 from testinstance.models import MicroServiceApiTestInstance
+from testinstance.models import SeleniumTestInstance
 
 
 # Create your views here.
@@ -72,13 +73,26 @@ def save_statistics_data(request):
 
 def update_running_status(request, test_id):
     if test_id:
-        running_status = MicroServiceApiTestInstance.objects.values('running_status').filter(id=test_id)[0][
-            "running_status"]
-        if running_status:
-            MicroServiceApiTestInstance.objects.filter(id=test_id).update(running_status=False)
+        # running_status = MicroServiceApiTestInstance.objects.values('running_status').filter(id=test_id)[0][
+        #     "running_status"]
+        running_status_query_set = MicroServiceApiTestInstance.objects.values('running_status').filter(id=test_id)
+        if running_status_query_set:
+            running_status = running_status_query_set[0]["running_status"]
+            if running_status:
+                MicroServiceApiTestInstance.objects.filter(id=test_id).update(running_status=False)
+            else:
+                MicroServiceApiTestInstance.objects.filter(id=test_id).update(running_status=True)
         else:
-            MicroServiceApiTestInstance.objects.filter(id=test_id).update(running_status=True)
+            running_status_query_set = SeleniumTestInstance.objects.values('running_status').filter(id=test_id)
+            if running_status_query_set:
+                running_status = running_status_query_set[0]["running_status"]
+                if running_status:
+                    SeleniumTestInstance.objects.filter(id=test_id).update(running_status=False)
+                else:
+                    SeleniumTestInstance.objects.filter(id=test_id).update(running_status=True)
+
     else:
         MicroServiceApiTestInstance.objects.filter(running_status=True).update(running_status=False)
+        SeleniumTestInstance.objects.filter(running_status=True).update(running_status=False)
 
     return HttpResponse(json.dumps({"state": "success"}))
