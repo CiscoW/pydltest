@@ -35,10 +35,10 @@ class MicroServiceApiTestInstanceAdmin(admin.ModelAdmin):
     # fields = (('test_date', 'test_mode'), 'host', ('min_wait', 'max_wait'),
     #           ('locust_count', 'hatch_rate', 'run_time'),
     #           'test_content', 'describe')
-    list_display = ['test_date', 'test_mode', 'host', 'min_wait', 'max_wait', 'run_time', 'locust_count', 'hatch_rate',
+    list_display = ['test_date', 'test_mode', 'host', 'locust_count', 'hatch_rate', 'max_wait', 'min_wait', 'run_time',
                     'describe', 'state']
 
-    search_fields = ('test_mode__test_mode', 'host')
+    search_fields = ('test_mode__test_mode', 'host', 'describe')
 
     ordering = ('-test_date',)
 
@@ -235,11 +235,15 @@ class MicroServiceApiTestInstanceAdmin(admin.ModelAdmin):
 
 @admin.register(SeleniumTestInstance)
 class SeleniumTestInstanceAdmin(admin.ModelAdmin):
-    list_display = ('test_date', 'test_mode', 'locust_count', 'hatch_rate', 'run_time',
-                    'max_wait', 'min_wait', 'browser_mode', 'time_out', 'state')
+    list_display = ('test_date', 'test_mode', 'host', 'locust_count', 'hatch_rate', 'run_time',
+                    'max_wait', 'min_wait', 'browser_mode', 'describe', 'state')
 
     fields = (('test_date', 'test_mode'), ('min_wait', 'max_wait'), ('locust_count', 'hatch_rate', 'run_time'),
               ('browser_mode', 'time_out'), 'side', 'describe')
+
+    ordering = ('-test_date',)
+
+    search_fields = ('host', 'describe')
 
     def state(self, obj):
         # running = get_locust_service_state(GET_LOCUST_SERVICE_STATE_URL % obj.id)

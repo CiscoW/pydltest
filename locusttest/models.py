@@ -26,8 +26,8 @@ class CsvData(models.Model):
         return self.id
 
     class Meta:
-        db_table = 'csv_data'
-        verbose_name_plural = verbose_name = "csv_data"
+        db_table = 'locust_csv_data'
+        verbose_name_plural = verbose_name = "locust_csv_data"
 
 
 class StatisticsData(models.Model):
@@ -38,5 +38,5 @@ class StatisticsData(models.Model):
         return self.id
 
     class Meta:
-        db_table = 'statistics_data'
-        verbose_name_plural = verbose_name = "statistics_data"
+        db_table = 'locust_statistics_data'
+        verbose_name_plural = verbose_name = "locust_statistics_data"

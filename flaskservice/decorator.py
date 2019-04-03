@@ -7,7 +7,6 @@ from locusttest.seleniumlocust import SeleniumLocustUnbounded
 
 def decorator(test_data):
     test_type = test_data["test_type"]
-    browser_mode = test_data["browser_mode"]
     import_path = test_data["import_path"]
     test_mode = importlib.import_module(import_path)
     test_task = test_mode.Test
@@ -20,6 +19,7 @@ def decorator(test_data):
             min_wait = test_data["min_wait"]
             max_wait = test_data["max_wait"]
     elif test_type == "browser":
+        browser_mode = test_data["browser_mode"]
         if browser_mode == "有界":
             class WebsiteUser(SeleniumLocustBounded):
                 task_set = test_task

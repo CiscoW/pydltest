@@ -267,11 +267,13 @@ def request_stats(test_id):
 
 @app.route("/stats/requests/csv/<test_id>")
 def request_stats_csv(test_id):
+    # 加上BOM头解决中文乱码问题
+    BOM = '\uFEFF'
     if locust_runner_id == test_id:
-        response = make_response(requests_csv())
+        response = make_response(BOM + requests_csv())
     else:
         requests_csv_data = json.loads(get_data_from_django(DJANGO_GET_CSV_DATA_URL % (test_id, 'requests')))
-        response = make_response(requests_csv_data)
+        response = make_response(BOM + requests_csv_data)
     file_name = "requests_{0}.csv".format(time())
     disposition = "attachment;filename={0}".format(file_name)
     response.headers["Content-type"] = "text/csv"
@@ -281,11 +283,12 @@ def request_stats_csv(test_id):
 
 @app.route("/stats/distribution/csv/<test_id>")
 def distribution_stats_csv(test_id):
+    BOM = '\uFEFF'
     if locust_runner_id == test_id:
-        response = make_response(distribution_csv())
+        response = make_response(BOM + distribution_csv())
     else:
         requests_csv_data = json.loads(get_data_from_django(DJANGO_GET_CSV_DATA_URL % (test_id, 'distribution')))
-        response = make_response(requests_csv_data)
+        response = make_response(BOM + requests_csv_data)
     file_name = "distribution_{0}.csv".format(time())
     disposition = "attachment;filename={0}".format(file_name)
     response.headers["Content-type"] = "text/csv"

@@ -102,8 +102,10 @@ class SeleniumTestInstance(models.Model):
             raise ValidationError({'time_out': '不能小于0'})
 
         # 因为可能频繁更新所有做动态引入
-        side_to_python = importlib.import_module('locusttest.side_to_python')
-        Side = side_to_python.Side
+        # side_to_python = importlib.import_module('locusttest.side_to_python')
+        # Side = side_to_python.Side
+        from locusttest.side_to_python import Side
+
         side_data = self.side.read().decode('utf-8')
         side = Side(side_data=side_data)
         self.host = side.url
