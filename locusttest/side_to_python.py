@@ -11,6 +11,13 @@ COMMAND_DIC = {
     'select': 'select',
     'addSelection': 'select',
     'doubleClick': 'double_click',
+    'runScript': 'execute_script',
+    'mouseDown': 'move_to_element',
+    'mouseDownAt': 'move_to_element',
+    'mouseUp': 'move_to_element',
+    'mouseUpAt': 'move_to_element',
+    'mouseMoveAt': 'move_to_element',
+    'mouseOver': 'move_to_element',
 }
 
 TARGET_DIC = {
@@ -103,6 +110,9 @@ class Side(object):
         elif command == 'open':
             target_to_python['url'] = self.url + target
 
+        elif command == 'runScript':
+            target_to_python['script'] = target
+
         else:
             element = target.split('=', 1)
             # 转换成Python kwargs
@@ -166,7 +176,12 @@ class Side(object):
 #     # user_behavior.run_fuc_by_name("click", by_css_selector="option:nth-child(5)")
 #     # user_behavior.run_fuc_by_name("click", by_id="id_test_content_add_link")
 #     # side = Side("../script/dl001.side")
-#     # from locusttest.userbehavior import UserBehavior
+#     from locusttest.userbehavior import UserBehavior
+#
+#     user_behavior = UserBehavior()
+#     user_behavior.get("https://www.ithome.com/")
+#     user_behavior.run_func_by_name("move_to_element", by_link_text="业界资讯")
+#
 #     #
 #     # user_behavior = UserBehavior()
 #     # print(side.pyside)

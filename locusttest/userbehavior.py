@@ -65,6 +65,10 @@ class UserBehavior(object):
         self.browser.execute_script('window.open("%s");' % url)
         return self.get_window_handles()[-1]
 
+    @locust_decorator
+    def execute_script(self, script, *args, **kwargs):
+        self.browser.execute_script(script)
+
     def get_current_window_handle(self, *args, **kwargs):
         return self.browser.current_window_handle
 
@@ -148,6 +152,9 @@ class UserBehavior(object):
     @locust_decorator
     def double_click(self, *args, **kwargs):
         ActionChains(self.browser).double_click(self.find_element(*args, **kwargs)).perform()
+
+    def move_to_element(self, *args, **kwargs):
+        ActionChains(self.browser).move_to_element(self.find_element(*args, **kwargs)).perform()
 
     @locust_decorator
     def send_keys(self, value, *args, **kwargs):
