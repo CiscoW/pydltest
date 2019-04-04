@@ -32,10 +32,12 @@ $("#new_test").click(function (event) {
             if (response.success) {
                 location.reload(true);
             } else {
-                alert(response.message)
+                alert(response.message);
+                location.reload(true);
             }
 
         });
+    $("a.new_test").hide();
     // location.reload(true);
     // $("body").attr("class", "hatching");
     // $("#start").fadeOut();

@@ -1,0 +1,63 @@
+{
+  "id": "a7a29540-ca17-44fb-8176-1a8a08d987b9",
+  "version": "2.0",
+  "name": "0404",
+  "url": "https://www.baidu.com",
+  "tests": [{
+    "id": "5dbbe940-cae7-4863-9693-69840ffe121a",
+    "name": "test",
+    "commands": [{
+      "id": "9e173041-91e8-4a1b-839b-23e68c694a4f",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7c5e3e09-fe68-4a4b-af2e-9aac2dcaaec3",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1366x737",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "d8177dab-2d5d-401b-bf25-7b18e7fc4e64",
+      "comment": "",
+      "command": "type",
+      "target": "id=kw",
+      "targets": [
+        ["id=kw", "id"],
+        ["name=wd", "name"],
+        ["css=#kw", "css:finder"],
+        ["xpath=//input[@id='kw']", "xpath:attributes"],
+        ["xpath=//form[@id='form']/span/input", "xpath:idRelative"],
+        ["xpath=//span/input", "xpath:position"]
+      ],
+      "value": "厦门天气"
+    }, {
+      "id": "744fa212-1b62-4278-b130-079fd619a5a4",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=kw",
+      "targets": [
+        ["id=kw", "id"],
+        ["name=wd", "name"],
+        ["css=#kw", "css:finder"],
+        ["xpath=//input[@id='kw']", "xpath:attributes"],
+        ["xpath=//form[@id='form']/span/input", "xpath:idRelative"],
+        ["xpath=//span/input", "xpath:position"]
+      ],
+      "value": "${KEY_ENTER}"
+    }]
+  }],
+  "suites": [{
+    "id": "6cf1d113-f407-4c59-9f58-561d65a89e58",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["5dbbe940-cae7-4863-9693-69840ffe121a"]
+  }],
+  "urls": ["https://www.baidu.com/"],
+  "plugins": []
+}

@@ -1,0 +1,76 @@
+{
+  "id": "a7a29540-ca17-44fb-8176-1a8a08d987b9",
+  "version": "2.0",
+  "name": "0404",
+  "url": "https://www.baidu.com",
+  "tests": [{
+    "id": "5dbbe940-cae7-4863-9693-69840ffe121a",
+    "name": "test",
+    "commands": [{
+      "id": "9e173041-91e8-4a1b-839b-23e68c694a4f",
+      "comment": "",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7c5e3e09-fe68-4a4b-af2e-9aac2dcaaec3",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1366x737",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "c8efafc0-d8f4-4d44-9201-4d87729f7ef8",
+      "comment": "",
+      "command": "click",
+      "target": "id=kw",
+      "targets": [
+        ["id=kw", "id"],
+        ["name=wd", "name"],
+        ["css=#kw", "css:finder"],
+        ["xpath=//input[@id='kw']", "xpath:attributes"],
+        ["xpath=//form[@id='form']/span/input", "xpath:idRelative"],
+        ["xpath=//span/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "886e2ec7-6cbf-4336-bd02-9aa0a9464ed4",
+      "comment": "",
+      "command": "type",
+      "target": "id=kw",
+      "targets": [
+        ["id=kw", "id"],
+        ["name=wd", "name"],
+        ["css=#kw", "css:finder"],
+        ["xpath=//input[@id='kw']", "xpath:attributes"],
+        ["xpath=//form[@id='form']/span/input", "xpath:idRelative"],
+        ["xpath=//span/input", "xpath:position"]
+      ],
+      "value": "厦门天气"
+    }, {
+      "id": "4c2db6dd-e395-47c0-96d4-638462eaf23e",
+      "comment": "",
+      "command": "click",
+      "target": "id=su",
+      "targets": [
+        ["id=su", "id"],
+        ["css=#su", "css:finder"],
+        ["xpath=//input[@id='su']", "xpath:attributes"],
+        ["xpath=//form[@id='form']/span[2]/input", "xpath:idRelative"],
+        ["xpath=//span[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "6cf1d113-f407-4c59-9f58-561d65a89e58",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["5dbbe940-cae7-4863-9693-69840ffe121a"]
+  }],
+  "urls": ["https://www.baidu.com/"],
+  "plugins": []
+}

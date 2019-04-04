@@ -2,10 +2,12 @@
 
 import json
 import copy
+from selenium.webdriver.common.keys import Keys
 
 COMMAND_DIC = {
     'open': 'get',
     'type': 'send_keys',
+    'sendKeys': 'send_keys',
     'click': 'click',
     'setWindowSize': 'set_window_size',
     'select': 'select',
@@ -28,6 +30,9 @@ TARGET_DIC = {
     'name': 'by_name',
 }
 
+VALUE_DIC = {
+    '${KEY_ENTER}': Keys.ENTER
+}
 # target中不是用于查找元素的command集合
 NON_ELEMENT = {"open", "setWindowSize", ""}
 
@@ -126,6 +131,10 @@ class Side(object):
         if command == 'select' or command == 'addSelection':
             value = value.split('=', 1)[1]
             value_to_python['by_visible_text'] = value
+
+        elif command == 'sendKeys':
+            value_to_python['value'] = VALUE_DIC[value]
+
         else:
             value_to_python['value'] = value
 
@@ -149,6 +158,7 @@ class Side(object):
                 item['kwargs'] = kwargs
 
         return pyside
+
 
 # if __name__ == '__main__':
 #     # user_behavior = UserBehavior()
@@ -179,8 +189,11 @@ class Side(object):
 #     from locusttest.userbehavior import UserBehavior
 #
 #     user_behavior = UserBehavior()
-#     user_behavior.get("https://www.ithome.com/")
-#     user_behavior.run_func_by_name("move_to_element", by_link_text="业界资讯")
+#     user_behavior.get("https://www.baidu.com/")
+#     user_behavior.run_func_by_name("send_keys", "厦门天气", by_id="kw")
+#     user_behavior.run_func_by_name("send_keys", ('\ue009', 'a'), by_id="kw")
+#
+#     user_behavior.run_func_by_name("send_keys", '\ue007', by_id="kw")
 #
 #     #
 #     # user_behavior = UserBehavior()
