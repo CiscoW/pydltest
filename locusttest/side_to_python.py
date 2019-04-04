@@ -76,15 +76,22 @@ class Side(object):
     def command_target_set(self):
         command_set = set()
         target_set = set()
+        value_set = set()
         for test in self.tests:
             for item in self.commands(test):
                 command = item['command']
                 target = item['target']
+                value = item['value']
+
                 command_set.add(command)
+
                 if command not in NON_ELEMENT and '=' in target:
                     target_set.add(target.split('=', 1)[0])
 
-        command_target_set = {'command': command_set, 'target': target_set}
+                if command == 'sendKeys':
+                    value_set.add(value)
+
+        command_target_set = {'command': command_set, 'target': target_set, 'value': value_set}
         return command_target_set
 
     @property
@@ -95,11 +102,18 @@ class Side(object):
     def target_set(self):
         return self.command_target_set['target']
 
+    @property
+    def value_set(self):
+        return self.command_target_set['value']
+
     def check_command(self):
         return self.command_set - set(COMMAND_DIC.keys())
 
     def check_target(self):
         return self.target_set - set(TARGET_DIC.keys())
+
+    def check_value(self):
+        return self.value_set - set(VALUE_DIC.keys())
 
     @staticmethod
     def command_to_python(command):
@@ -190,7 +204,7 @@ class Side(object):
 #
 #     user_behavior = UserBehavior()
 #     user_behavior.get("https://www.baidu.com/")
-#     user_behavior.run_func_by_name("send_keys", "厦门天气", by_id="kw")
+#     user_behavior.run_func_by_name("send_keys", "天气", by_id="kw")
 #     user_behavior.run_func_by_name("send_keys", ('\ue009', 'a'), by_id="kw")
 #
 #     user_behavior.run_func_by_name("send_keys", '\ue007', by_id="kw")

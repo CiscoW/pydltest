@@ -121,13 +121,18 @@ class SeleniumTestInstance(models.Model):
             self.host = side.url
             check_command = side.check_command()
             check_target = side.check_target()
-            if check_command or check_target:
+            check_value = side.check_value()
+
+            if check_command or check_target or check_value:
                 prompt = '请联系系统开发人员, 更新以下内容:'
                 if check_command:
                     prompt = prompt + 'command:' + str(check_command)
 
                 if check_target:
                     prompt = prompt + 'target:' + str(check_target)
+
+                if check_value:
+                    prompt = prompt + 'value:' + str(check_value)
 
                 raise ValidationError({'side': prompt})
         except Exception as e:
