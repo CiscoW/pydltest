@@ -11,13 +11,14 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from django.contrib import admin
 from testinstance.models import *
-from locusttest.testinstance import ApiTestInstance
-from locusttest.testinstance import SideTestInstance
-from locusttest.testdata import get_api_test_data
-from locusttest.testdata import get_side_test_data
+# from locusttest.testinstance import ApiTestInstance
+# from locusttest.testinstance import SideTestInstance
+# from locusttest.testdata import get_api_test_data
+# from locusttest.testdata import get_side_test_data
 # from locusttest.testdata import send_test_data
-from flaskservice.config import GET_LOCUST_SERVICE_STATE_URL, INDEX_URL
-from locusttest.models import LocustTest
+# from flaskservice.config import GET_LOCUST_SERVICE_STATE_URL
+from flaskservice.config import INDEX_URL
+# from locusttest.models import LocustTest
 
 IS_POPUP_VAR = '_popup'
 TO_FIELD_VAR = '_to_field'
@@ -146,9 +147,10 @@ class MicroServiceApiTestInstanceAdmin(admin.ModelAdmin):
 
             # 只能写在这里，不能写在save_model中，那边的obj中的数据是历史的
             # 向flask 服务中发送数据 注: 因django中使用locust出现猴子补丁问题 所以用此方法比较合适
-            api_test_instance = ApiTestInstance(obj)
-            test_id, test_data = get_api_test_data(api_test_instance)
-            LocustTest.objects.create(id=test_id, test_data=test_data)
+            # 此方法禁用 改成动态获取更为合理
+            # api_test_instance = ApiTestInstance(obj)
+            # test_id, test_data = get_api_test_data(api_test_instance)
+            # LocustTest.objects.create(id=test_id, test_data=test_data)
             return self.response_post_save_add(request, obj)
 
     def response_change(self, request, obj):
@@ -226,9 +228,10 @@ class MicroServiceApiTestInstanceAdmin(admin.ModelAdmin):
             self.message_user(request, msg, messages.SUCCESS)
             # 只能写在这里，不能写在save_model中，那边的obj中的数据是历史的
             # 向flask 服务中发送数据 注: 因django中使用locust出现猴子补丁问题 所以用此方法比较合适
-            api_test_instance = ApiTestInstance(obj)
-            test_id, test_data = get_api_test_data(api_test_instance)
-            LocustTest.objects.filter(id=test_id).update(test_data=test_data)
+            # 此方法禁用 改成动态获取更为合理
+            # api_test_instance = ApiTestInstance(obj)
+            # test_id, test_data = get_api_test_data(api_test_instance)
+            # LocustTest.objects.filter(id=test_id).update(test_data=test_data)
 
             return self.response_post_save_change(request, obj)
 
@@ -333,9 +336,10 @@ class SeleniumTestInstanceAdmin(admin.ModelAdmin):
 
             # 只能写在这里，不能写在save_model中，那边的obj中的数据是历史的
             # 向flask 服务中发送数据 注: 因django中使用locust出现猴子补丁问题 所以用此方法比较合适
-            side_test_instance = SideTestInstance(obj)
-            test_id, test_data = get_side_test_data(side_test_instance)
-            LocustTest.objects.create(id=test_id, test_data=test_data)
+            # 此方法禁用 改成动态获取更为合理
+            # side_test_instance = SideTestInstance(obj)
+            # test_id, test_data = get_side_test_data(side_test_instance)
+            # LocustTest.objects.create(id=test_id, test_data=test_data)
             return self.response_post_save_add(request, obj)
 
     def response_change(self, request, obj):
@@ -413,8 +417,9 @@ class SeleniumTestInstanceAdmin(admin.ModelAdmin):
             self.message_user(request, msg, messages.SUCCESS)
             # 只能写在这里，不能写在save_model中，那边的obj中的数据是历史的
             # 向flask 服务中发送数据 注: 因django中使用locust出现猴子补丁问题 所以用此方法比较合适
-            side_test_instance = SideTestInstance(obj)
-            test_id, test_data = get_side_test_data(side_test_instance)
-            LocustTest.objects.filter(id=test_id).update(test_data=test_data)
+            # 此方法禁用 改成动态获取更为合理
+            # side_test_instance = SideTestInstance(obj)
+            # test_id, test_data = get_side_test_data(side_test_instance)
+            # LocustTest.objects.filter(id=test_id).update(test_data=test_data)
 
             return self.response_post_save_change(request, obj)

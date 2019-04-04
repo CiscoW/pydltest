@@ -6,12 +6,26 @@ from django.views.decorators.csrf import csrf_exempt
 from locusttest.models import *
 from testinstance.models import MicroServiceApiTestInstance
 from testinstance.models import SeleniumTestInstance
+from locusttest.testinstance import ApiTestInstance
+from locusttest.testinstance import SideTestInstance
+from locusttest.testdata import get_api_test_data
+from locusttest.testdata import get_side_test_data
 
 
 # Create your views here.
 # @login_required(login_url='/login/')
 def get_test_data(request, test_id):
-    test_data = LocustTest.objects.values('test_data').filter(id=test_id)[0]["test_data"]
+    # 此方法禁用, 新方法更灵活
+    # test_data = LocustTest.objects.values('test_data').filter(id=test_id)[0]["test_data"]
+    obj = MicroServiceApiTestInstance.objects.get(id=test_id)
+    if obj:
+        api_test_instance = ApiTestInstance(obj)
+        test_id, test_data = get_api_test_data(api_test_instance)
+
+    else:
+        obj = SeleniumTestInstance.objects.get(id=test_id)
+        side_test_instance = SideTestInstance(obj)
+        test_id, test_data = get_side_test_data(side_test_instance)
 
     return HttpResponse(test_data, content_type="application/json")
 

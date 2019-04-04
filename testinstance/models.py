@@ -1,4 +1,4 @@
-import importlib
+# import importlib
 from django.db import models
 from django.core.exceptions import ValidationError
 from basedata import get_uuid
@@ -40,6 +40,9 @@ class MicroServiceApiTestInstance(models.Model):
     running_status = models.BooleanField('是否在运行', default=False, db_column='running_status')
 
     def clean(self):
+        if self.running_status:
+            raise ValidationError('该实例正在进行压力测试, 无法修改!')
+
         if self.min_wait is None or self.min_wait < 0:
             raise ValidationError({'min_wait': '不能小于0'})
 
@@ -83,6 +86,9 @@ class SeleniumTestInstance(models.Model):
     running_status = models.BooleanField('是否在运行', default=False, db_column='running_status')
 
     def clean(self):
+        if self.running_status:
+            raise ValidationError('该实例正在进行压力测试, 无法修改!')
+
         if self.min_wait is None or self.min_wait < 0:
             raise ValidationError({'min_wait': '不能为空和小于0'})
 

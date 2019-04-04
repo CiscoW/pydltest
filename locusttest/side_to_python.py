@@ -4,6 +4,7 @@ import json
 import copy
 from selenium.webdriver.common.keys import Keys
 
+# TODO 需要根据实际情况，新增新的对应关系
 COMMAND_DIC = {
     'open': 'get',
     'type': 'send_keys',
@@ -158,7 +159,6 @@ class Side(object):
                 item['kwargs'] = kwargs
 
         return pyside
-
 
 # if __name__ == '__main__':
 #     # user_behavior = UserBehavior()

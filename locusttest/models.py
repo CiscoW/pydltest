@@ -4,16 +4,16 @@ from basedata import get_uuid
 
 # Create your models here.
 
-class LocustTest(models.Model):
-    id = models.CharField(max_length=32, primary_key=True, editable=False, db_column='id')
-    test_data = models.TextField('Json数据', db_column='test_data')
-
-    def __str__(self):
-        return self.id
-
-    class Meta:
-        db_table = 'locust_test'
-        verbose_name_plural = verbose_name = "locust_test"
+# class LocustTest(models.Model):
+#     id = models.CharField(max_length=32, primary_key=True, editable=False, db_column='id')
+#     test_data = models.TextField('Json数据', db_column='test_data')
+#
+#     def __str__(self):
+#         return self.id
+#
+#     class Meta:
+#         db_table = 'locust_test'
+#         verbose_name_plural = verbose_name = "locust_test"
 
 
 class CsvData(models.Model):
