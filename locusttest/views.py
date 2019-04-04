@@ -17,15 +17,18 @@ from locusttest.testdata import get_side_test_data
 def get_test_data(request, test_id):
     # 此方法禁用, 新方法更灵活
     # test_data = LocustTest.objects.values('test_data').filter(id=test_id)[0]["test_data"]
-    obj = MicroServiceApiTestInstance.objects.get(id=test_id)
+    obj = MicroServiceApiTestInstance.objects.filter(id=test_id)
     if obj:
-        api_test_instance = ApiTestInstance(obj)
+        api_test_instance = ApiTestInstance(obj[0])
         test_id, test_data = get_api_test_data(api_test_instance)
 
     else:
-        obj = SeleniumTestInstance.objects.get(id=test_id)
-        side_test_instance = SideTestInstance(obj)
-        test_id, test_data = get_side_test_data(side_test_instance)
+        obj = SeleniumTestInstance.objects.filter(id=test_id)
+        if obj:
+            side_test_instance = SideTestInstance(obj[0])
+            test_id, test_data = get_side_test_data(side_test_instance)
+        else:
+            test_data = json.dumps({})
 
     return HttpResponse(test_data, content_type="application/json")
 

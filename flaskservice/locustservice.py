@@ -8,7 +8,7 @@ import urllib.request
 import gevent
 import six
 from flask import Flask, render_template, make_response
-from flask import request
+# from flask import request
 from flask import jsonify
 from locust.main import parse_options, version
 from locust.runners import LocalLocustRunner, MasterLocustRunner
@@ -95,6 +95,10 @@ def index(test_id):
                                )
     else:
         test_data = json.loads(get_data_from_django(DJANGO_GET_TEST_DATA_URL % test_id))
+        if test_data:
+            _host = test_data['host']
+        else:
+            _host = '无'
         state = 'stopped'
         user_count = 0
         return render_template("index.html",
@@ -102,7 +106,7 @@ def index(test_id):
                                is_distributed=is_distributed,
                                user_count=user_count,
                                version=version,
-                               host=test_data['host']
+                               host=_host
                                )
 
 
@@ -126,7 +130,11 @@ def start(test_id):
     response = {'success': True, 'message': 'Test started'}
     if locust_runner_id is None:
         test_data = json.loads(get_data_from_django(DJANGO_GET_TEST_DATA_URL % test_id))
-        start_pressure_test(test_data)
+        if test_data:
+            start_pressure_test(test_data)
+        else:
+            response['success'] = False
+            response['message'] = "该实例不存在! 或已被删除!"
     else:
         response['success'] = False
         response['message'] = "启动失败! 有其他压力测试实例正在运行"
