@@ -1,4 +1,5 @@
 import json
+import os
 # import requests
 from urllib.parse import quote as urlquote
 from django.contrib import messages
@@ -34,6 +35,18 @@ TO_FIELD_VAR = '_to_field'
 def delete_test_results(instance_id):
     CsvData.objects.filter(test_id=instance_id).delete()
     StatisticsData.objects.filter(id=instance_id).delete()
+
+
+def remove_side(instance_id):
+    # 防止不可预见的异常 影响删除数据操作 故遇到异常时不用删除文件和文件夹了 不会影响正常使用
+    try:
+        path = "script/sides/" + instance_id + "/"
+        file_list = os.listdir(path)
+        for file in file_list:
+            os.remove(path + file)
+        os.rmdir(path)
+    except Exception as e:
+        print(e)
 
 
 # Register your models here.
@@ -286,6 +299,8 @@ class SeleniumTestInstanceAdmin(admin.ModelAdmin):
         """
         # 删除单个测试实例时, 同步删除测试数据结果
         delete_test_results(obj.id)
+        remove_side(obj.id)
+
         obj.delete()
 
     def delete_queryset(self, request, queryset):
@@ -293,6 +308,7 @@ class SeleniumTestInstanceAdmin(admin.ModelAdmin):
         # 删除多个测试实例时, 同步删除测试数据结果
         for obj in queryset:
             delete_test_results(obj.id)
+            remove_side(obj.id)
 
         queryset.delete()
 
