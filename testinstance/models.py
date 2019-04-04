@@ -107,24 +107,30 @@ class SeleniumTestInstance(models.Model):
         if self.time_out is None or self.time_out < 0:
             raise ValidationError({'time_out': '不能小于0'})
 
+        if not self.side:
+            raise ValidationError({'side': '请上传文件'})
+
         # 因为可能频繁更新所有做动态引入
         # side_to_python = importlib.import_module('locusttest.side_to_python')
         # Side = side_to_python.Side
         from locusttest.side_to_python import Side
+        prompt = '上传的文件格式错误!'
+        try:
+            side_data = self.side.read().decode('utf-8')
+            side = Side(side_data=side_data)
+            self.host = side.url
+            check_command = side.check_command()
+            check_target = side.check_target()
+            if check_command or check_target:
+                prompt = '请联系系统开发人员, 更新以下内容:'
+                if check_command:
+                    prompt = prompt + 'command:' + str(check_command)
 
-        side_data = self.side.read().decode('utf-8')
-        side = Side(side_data=side_data)
-        self.host = side.url
-        check_command = side.check_command()
-        check_target = side.check_target()
-        if check_command or check_target:
-            prompt = '请联系系统开发人员, 更新以下内容:'
-            if check_command:
-                prompt = prompt + 'command:' + str(check_command)
+                if check_target:
+                    prompt = prompt + 'target:' + str(check_target)
 
-            if check_target:
-                prompt = prompt + 'target:' + str(check_target)
-
+                raise ValidationError({'side': prompt})
+        except Exception as e:
             raise ValidationError({'side': prompt})
 
     def __str__(self):

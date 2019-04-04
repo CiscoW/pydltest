@@ -11,6 +11,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from django.contrib import admin
 from testinstance.models import *
+from locusttest.models import *
 # from locusttest.testinstance import ApiTestInstance
 # from locusttest.testinstance import SideTestInstance
 # from locusttest.testdata import get_api_test_data
@@ -18,6 +19,7 @@ from testinstance.models import *
 # from locusttest.testdata import send_test_data
 # from flaskservice.config import GET_LOCUST_SERVICE_STATE_URL
 from flaskservice.config import INDEX_URL
+
 # from locusttest.models import LocustTest
 
 IS_POPUP_VAR = '_popup'
@@ -28,6 +30,10 @@ TO_FIELD_VAR = '_to_field'
 #     response = requests.get(url=url)
 #     state = json.loads(response.text)
 #     return state
+# 删除多个测试实例时, 同步删除测试数据结果
+def delete_test_results(instance_id):
+    CsvData.objects.filter(test_id=instance_id).delete()
+    StatisticsData.objects.filter(id=instance_id).delete()
 
 
 # Register your models here.
@@ -68,6 +74,22 @@ class MicroServiceApiTestInstanceAdmin(admin.ModelAdmin):
     #     # 向flask 服务中发送数据 注: 因django中使用locust出现猴子补丁问题 所以用此方法比较合适
     #     test_instance = TestInstance(obj)
     #     send_test_data(test_instance)
+
+    def delete_model(self, request, obj):
+        """
+        Given a model instance delete it from the database.
+        """
+        # 删除单个测试实例时, 同步删除测试数据结果
+        delete_test_results(obj.id)
+        obj.delete()
+
+    def delete_queryset(self, request, queryset):
+        """Given a queryset, delete it from the database."""
+        # 删除多个测试实例时, 同步删除测试数据结果
+        for obj in queryset:
+            delete_test_results(obj.id)
+
+        queryset.delete()
 
     def response_add(self, request, obj, post_url_continue=None):
         """
@@ -257,6 +279,22 @@ class SeleniumTestInstanceAdmin(admin.ModelAdmin):
         return format_html(a_label)
 
     state.short_description = "状态"
+
+    def delete_model(self, request, obj):
+        """
+        Given a model instance delete it from the database.
+        """
+        # 删除单个测试实例时, 同步删除测试数据结果
+        delete_test_results(obj.id)
+        obj.delete()
+
+    def delete_queryset(self, request, queryset):
+        """Given a queryset, delete it from the database."""
+        # 删除多个测试实例时, 同步删除测试数据结果
+        for obj in queryset:
+            delete_test_results(obj.id)
+
+        queryset.delete()
 
     def response_add(self, request, obj, post_url_continue=None):
         """
