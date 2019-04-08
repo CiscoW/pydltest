@@ -56,7 +56,7 @@ def start_pressure_test(test_data):
     runners.locust_runner = LocalLocustRunner([WebsiteUser], options)
     runners.locust_runner.start_hatching(locust_count=locust_count, hatch_rate=hatch_rate)
     update_running_status(DJANGO_GET_UPDATE_RUNNING_STATUS_URL, locust_runner_id)
-    gevent.spawn_later(test_data["run_time"], time_limit_stop)
+    gevent.spawn_later(test_data["run_time"], time_limit_stop, locust_runner_id)
 
 
 # 弃用
@@ -110,9 +110,11 @@ def index(test_id):
                                )
 
 
-def time_limit_stop():
+def time_limit_stop(test_id):
+    # 加不加锁暂时没有发现差异，并且这样加锁是否真的有多用还待观察
+    _lock = gevent.lock.Semaphore()
     global locust_runner_id
-    if locust_runner_id is not None:
+    if locust_runner_id is not None and locust_runner_id == test_id:
         runners.locust_runner.quit()
         requests_csv_data = {"test_id": locust_runner_id, "state": "requests", "state_data": requests_csv()}
         distribution_csv_data = {"test_id": locust_runner_id, "state": "distribution", "state_data": distribution_csv()}
@@ -123,6 +125,7 @@ def time_limit_stop():
         post_data_to_django(DJANGO_POST_STATISTICS_DATA_URL, json.dumps(statistics_data))
         update_running_status(DJANGO_GET_UPDATE_RUNNING_STATUS_URL, locust_runner_id)
         locust_runner_id = None
+    _lock.release()
 
 
 @app.route("/start/<test_id>")
@@ -197,8 +200,8 @@ def get_statistics_data():
     return report
 
 
-@app.route("/stop")
-def locust_stop():
+@app.route("/stop/<test_id>")
+def locust_stop(test_id):
     # global locust_runner_id
     # runners.locust_runner.stop()
     # requests_csv_data = {"test_id": locust_runner_id, "state": "requests", "state_data": requests_csv()}
@@ -211,7 +214,7 @@ def locust_stop():
     #
     # locust_runner_id = None
 
-    time_limit_stop()
+    time_limit_stop(test_id)
 
     return jsonify({'success': True, 'message': 'Test stopped'})
 

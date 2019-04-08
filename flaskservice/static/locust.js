@@ -6,7 +6,8 @@ $(window).ready(function () {
 
 $("#box_stop a.stop-button").click(function (event) {
     event.preventDefault();
-    $.get($(this).attr("href"));
+    var id = window.location.pathname;
+    $.get($(this).attr("href") + id);
     $("body").attr("class", "stopped");
     $(".box_stop").hide();
     $("a.new_test").show();
