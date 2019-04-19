@@ -26,6 +26,7 @@ class Test(TaskSet):
     @task
     def one_by_one_method(self):
         import time
+        import random
         import gevent
         _lock = gevent.lock.Semaphore()
         for api in self.api_list:
@@ -34,6 +35,8 @@ class Test(TaskSet):
             start_time = int(time.time())
             while go_on:
                 self.client.request(**api)
+                sleep_time = random.randint(self.min_wait, self.max_wait)
+                time.sleep(sleep_time / 1000)
                 if int(time.time()) - start_time >= self.run_time / self.api_list_num:
                     go_on = False
             _lock.release()
