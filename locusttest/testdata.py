@@ -32,8 +32,12 @@ def get_api_test_data(test_instance):
             token_params = json.loads(test_instance.token_params)
         else:
             token_params = None
+        try:
+            token = get_access_token(token_url, user, password, token_params)
+        except Exception as e:
+            print(e)
+            token = ''
 
-        token = get_access_token(token_url, user, password, token_params)
         headers = {'content-type': "application/json", "Authorization": token}
     else:
         headers = {'content-type': "application/json"}

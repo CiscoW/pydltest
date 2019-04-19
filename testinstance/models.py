@@ -1,4 +1,5 @@
 # import importlib
+import json
 from django.db import models
 from django.core.exceptions import ValidationError
 from basedata import get_uuid
@@ -57,6 +58,16 @@ class MicroServiceApiTestInstance(models.Model):
 
         if self.hatch_rate is None or self.hatch_rate < 0:
             raise ValidationError({'hatch_rate': '不能小于0'})
+
+        if self.token_params:
+            try:
+                token_params = json.loads(self.token_params)
+                if not isinstance(token_params, list) and not isinstance(token_params, dict):
+                    raise ValidationError({'token_params': '请输入json格式数据'})
+
+            except Exception as e:
+                print(e)
+                raise ValidationError({'token_params': '请输入json格式数据'})
 
     def __str__(self):
         return "微服务接口压力测试实例"

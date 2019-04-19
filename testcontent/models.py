@@ -1,4 +1,6 @@
+import json
 from django.db import models
+from django.core.exceptions import ValidationError
 from basedata import get_uuid
 from basedata.models import RequestMethod
 
@@ -14,6 +16,25 @@ class MicroServiceApi(models.Model):
     params = models.TextField('请求参数', blank=True, null=True, db_column='params')
     body = models.TextField('请求体', blank=True, null=True, db_column='body')
     describe = models.TextField('描述', blank=True, null=True, db_column='describe')
+
+    def clean(self):
+        if self.params:
+            try:
+                params = json.loads(self.params)
+                if not isinstance(params, list) and not isinstance(params, dict):
+                    raise ValidationError({'params': '请输入json格式数据'})
+
+            except Exception as e:
+                raise ValidationError({'params': '请输入json格式数据'})
+
+        if self.body:
+            try:
+                body = json.loads(self.body)
+                if not isinstance(body, list) and not isinstance(body, dict):
+                    raise ValidationError({'body': '请输入json格式数据'})
+
+            except Exception as e:
+                raise ValidationError({'body': '请输入json格式数据'})
 
     def __str__(self):
         return self.url + " " + self.service_source
